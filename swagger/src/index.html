@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Usuário</title>
+</head>
+<body>
+  <h2>Cadastro de Usuário</h2>
+  <form id="userForm">
+    <input type="text" id="name" placeholder="Nome" required />
+    <input type="email" id="email" placeholder="E-mail" required />
+    <button type="submit">Cadastrar</button>
+  </form>
+
+  <h2>Usuários Cadastrados</h2>
+  <ul id="userList"></ul>
+
+  <script>
+    document.getElementById("userForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+
+      const res = await fetch("http://localhost:3000/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email }),
+      });
+
+      const data = await res.json();
+      alert(data.message);
+      loadUsers();
+    });
+
+    async function loadUsers() {
+      const res = await fetch("http://localhost:3000/users");
+      const users = await res.json();
+      const userList = document.getElementById("userList");
+      userList.innerHTML = "";
+      users.forEach(user => {
+        const li = document.createElement("li");
+        li.textContent = `${user.name} - ${user.email}`;
+        userList.appendChild(li);
+      });
+    }
+
+    loadUsers();
+  </script>
+</body>
+</html>
